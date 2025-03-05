@@ -7,7 +7,7 @@ module.exports = (req,res,next)=>{
         error.statusCode=401;
         throw error;
     }
-    const token=authToken.split(' ')[1]; // "Bearer token"
+    const token=authToken.split(' ')[1]; // we expect "Bearer token"
     let decodedToken;
     try{
         decodedToken= jwt.verify(token,'somesupersecretsecret');
