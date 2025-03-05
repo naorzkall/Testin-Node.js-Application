@@ -33,5 +33,37 @@ describe('Auth Middleware',()=>{
         expect(authMiddleware.bind(this,req, {}, ()=>{})).to.throw(); 
     
     })
+
+    //************************JWT********************************
+    /* when do not test if the jwt.verify() works correctly
+        we test if our code after that => behaves correctly when verification fails or when Succeed
+        (like when we do not get back an object that has a userId for example)
+
+        - for fail we can pass any dummy token
+        - for Succeed we have a problem
+            we gonna solve it in the next commit
+
+    */
+    // fail test
+    it('should throw an error if the token cannot be verified',()=>{
+        const req = {
+            get: (headerName)=>{
+                return 'Bearer zdfs';
+            }
+        };
+        expect(authMiddleware.bind(this,req, {}, ()=>{})).to.throw(); 
+    })
+
+    // Succeed test
+    it('should yeild a userId after decoding the token',()=>{
+        const req = {
+            get: (headerName)=>{
+                return 'Bearer dfgdfgdfgdfgdfg';
+            }
+        };
+
+        authMiddleware(req, {}, ()=>{});
+        expect(req).to.have.property('userId'); 
+    })
     
 })
