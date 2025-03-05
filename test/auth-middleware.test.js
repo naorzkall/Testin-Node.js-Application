@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 import authMiddleware from '../middleware/is-auth.js';
+import jwt from 'jsonwebtoken'
+import sinon from 'sinon';
 
 // descripe is a mocha method to organize the tests
 describe('Auth Middleware',()=>{
@@ -54,7 +56,7 @@ describe('Auth Middleware',()=>{
         expect(authMiddleware.bind(this,req, {}, ()=>{})).to.throw(); 
     })
 
-    // Succeed test
+    // Succeed test using Manual Mocking
     it('should yeild a userId after decoding the token',()=>{
         const req = {
             get: (headerName)=>{
@@ -62,8 +64,29 @@ describe('Auth Middleware',()=>{
             }
         };
 
+        // using Manual Mocking
+        /* 
+        jwt.verify = ()=> {
+            return { userId: 'abc' }
+        } 
+        */
+
+        // using Sinon
+        //Create Stub to replace `jwt.verify`
+        const verifyStub = sinon.stub(jwt, 'verify');
+        // Specify the value to return when `jwt.verify` is called
+        verifyStub.returns({ userId: 'abc' });
+
         authMiddleware(req, {}, ()=>{});
-        expect(req).to.have.property('userId'); 
+        expect(req).to.have.property('userId');
+        expect(req).to.have.property('userId', 'abc'); 
+        // Ensure that jwt.verify() is running inside the middleware.
+        expect(verifyStub.called).to.be.true;
+
+        // Restore original function after testing
+        verifyStub.restore();
     })
+
+
     
 })
