@@ -86,7 +86,4 @@ describe('Auth Middleware',()=>{
         // Restore original function after testing
         verifyStub.restore();
     })
-
-
-    
 })
