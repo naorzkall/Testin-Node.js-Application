@@ -18,9 +18,9 @@ after(async () => {
     await mongoose.disconnect();
 });
 
-afterEach(async () => {
+/* afterEach(async () => {
     await User.deleteMany({});
-});
+}); */
 
 // 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 

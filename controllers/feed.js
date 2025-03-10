@@ -32,6 +32,7 @@ exports.getPosts = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty()) {
         const error = new Error('Validation failed, enterd data is incorrect.');
         // adding my own custom property (you can named whatever you want)
@@ -48,6 +49,8 @@ exports.createPost = async (req, res, next) => {
         error.statusCode = 404;
         throw error
     }
+
+
     /*
         once there no error that mean that multure was able to extract a valid file,
         so you can access file.path which multer generates and which holds the path
@@ -63,21 +66,31 @@ exports.createPost = async (req, res, next) => {
         imageUrl: imageUrl,
         creator: req.userId
       });
+
     try{
         await post.save();
         const user = await User.findById(req.userId);
         user.posts.push(post);
-        await user.save();
+
+        // to return a promise
+        const savedUser = await user.save();
+        
         res.status(201).json({
           message: 'Post created successfully!',
           post: post,
           creator: { _id: user._id, name: user.name }
         });
+        //console.log(res);
+
+        // return savedUser for feedController test
+        return savedUser;
     }catch(err){
         if (!err.statusCode) {
             err.statusCode = 500;
           }
           next(err);
+          //console.log(err);
+        return;
     }
 };
 
